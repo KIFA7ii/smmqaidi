@@ -64,6 +64,363 @@ body {
 }
 .container { width:100%; max-width:1100px; margin:0 auto; padding:0 1.25rem; }
 
+/* ═══════════════════════════════════════════
+   PROFESSIONAL 3D INTRO ANIMATION
+   ═══════════════════════════════════════════ */
+
+.pro-intro {
+  position: fixed; inset: 0; z-index: 9999;
+  background:
+    radial-gradient(ellipse at 50% 40%, #1e293b 0%, #0f172a 45%, #050810 100%);
+  overflow: hidden;
+  perspective: 1000px;
+  perspective-origin: 50% 60%;
+  animation: proIntroExit 0.7s cubic-bezier(0.7, 0, 0.84, 0) 2.4s forwards;
+}
+.pro-intro.done { display: none; }
+
+/* 3D infinite grid floor */
+.pro-grid {
+  position: absolute;
+  left: 50%; top: 65%;
+  width: 300vw; height: 200vh;
+  transform: translate(-50%, 0) rotateX(72deg);
+  background-image:
+    linear-gradient(rgba(96,165,250,0.45) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(96,165,250,0.45) 1px, transparent 1px);
+  background-size: 80px 80px;
+  animation: proGridMove 2s linear infinite;
+  mask-image: radial-gradient(ellipse at 50% 0%, black 30%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 0%, black 30%, transparent 75%);
+}
+
+/* 3D ceiling grid (mirror) */
+.pro-grid.ceiling {
+  top: -65%;
+  transform: translate(-50%, 0) rotateX(-72deg);
+  background-image:
+    linear-gradient(rgba(245,158,11,0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245,158,11,0.18) 1px, transparent 1px);
+  mask-image: radial-gradient(ellipse at 50% 100%, black 30%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 100%, black 30%, transparent 75%);
+}
+
+/* Horizon glow */
+.pro-horizon {
+  position: absolute;
+  left: 0; right: 0; top: 50%;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(96,165,250,0.3) 20%,
+    #60a5fa 45%,
+    #fbbf24 50%,
+    #60a5fa 55%,
+    rgba(96,165,250,0.3) 80%,
+    transparent 100%);
+  box-shadow:
+    0 0 20px rgba(96,165,250,0.6),
+    0 0 60px rgba(96,165,250,0.4),
+    0 0 120px rgba(96,165,250,0.25);
+  z-index: 2;
+  transform: scaleX(0);
+  animation: proHorizonExpand 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+}
+
+/* Sun/glow at horizon */
+.pro-horizon-glow {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 600px; height: 300px;
+  transform: translate(-50%, -100%);
+  background: radial-gradient(ellipse at center bottom,
+    rgba(96,165,250,0.45) 0%,
+    rgba(37,99,235,0.25) 30%,
+    transparent 65%);
+  z-index: 1;
+  opacity: 0;
+  animation: proGlowFadeIn 1.6s ease 0.3s forwards;
+  filter: blur(8px);
+}
+
+/* Light beams crossing the screen */
+.pro-beam {
+  position: absolute;
+  width: 1px; height: 100vh;
+  background: linear-gradient(180deg, transparent, rgba(96,165,250,0.7), transparent);
+  top: 0;
+  opacity: 0;
+  animation: proBeamSweep 2.4s ease-in-out infinite;
+}
+.pro-beam:nth-child(1) { left: 15%; animation-delay: 0.3s; }
+.pro-beam:nth-child(2) { left: 35%; animation-delay: 0.8s; }
+.pro-beam:nth-child(3) { left: 65%; animation-delay: 0.5s; background: linear-gradient(180deg, transparent, rgba(245,158,11,0.5), transparent); }
+.pro-beam:nth-child(4) { left: 85%; animation-delay: 1.1s; }
+
+/* Subtle vignette */
+.pro-intro::after {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(5,8,16,0.6) 100%);
+  z-index: 4; pointer-events: none;
+}
+
+/* Content container */
+.pro-content {
+  position: absolute; inset: 0; z-index: 10;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+
+/* Logo wrapper with mask reveal */
+.pro-logo-wrap {
+  overflow: hidden;
+  padding: 0.3em 0.1em;
+}
+.pro-logo {
+  font-family: 'Tajawal', sans-serif;
+  font-size: clamp(2.8rem, 9vw, 5.5rem);
+  font-weight: 900;
+  letter-spacing: -2.5px;
+  color: #fff;
+  display: inline-flex; align-items: center; gap: 0.15em;
+  transform: translateY(110%);
+  animation: proLogoReveal 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
+  text-shadow:
+    0 0 30px rgba(96,165,250,0.35),
+    0 4px 20px rgba(0,0,0,0.4);
+}
+.pro-logo .bolt {
+  color: #fbbf24;
+  font-size: 0.85em;
+  filter: drop-shadow(0 0 12px rgba(251,191,36,0.7));
+}
+.pro-logo .smm { color: #fff; }
+.pro-logo .qaidi {
+  background: linear-gradient(135deg, #60a5fa 0%, #818cf8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Animated underline */
+.pro-underline {
+  width: 0;
+  height: 2px;
+  margin-top: 1.4rem;
+  background: linear-gradient(90deg, transparent, #60a5fa 30%, #fbbf24 50%, #60a5fa 70%, transparent);
+  box-shadow: 0 0 12px rgba(96,165,250,0.6);
+  animation: proUnderlineExpand 1s cubic-bezier(0.16, 1, 0.3, 1) 1.1s forwards;
+}
+
+/* Tagline */
+.pro-tagline-wrap {
+  overflow: hidden;
+  margin-top: 1.2rem;
+  padding: 0.2em 0;
+}
+.pro-tagline {
+  font-family: 'Tajawal', sans-serif;
+  font-size: clamp(0.85rem, 2vw, 1.05rem);
+  font-weight: 600;
+  color: #94a3b8;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  transform: translateY(110%);
+  animation: proTaglineReveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) 1.3s forwards;
+}
+.pro-tagline span { color: #60a5fa; font-weight: 700; }
+
+/* Corner brackets (premium framing) */
+.pro-bracket {
+  position: absolute;
+  width: 40px; height: 40px;
+  border: 1px solid rgba(96,165,250,0.5);
+  z-index: 5;
+  opacity: 0;
+  animation: proBracketIn 0.8s ease 1.6s forwards;
+}
+.pro-bracket.tl { top: 24px; left: 24px; border-right: none; border-bottom: none; }
+.pro-bracket.tr { top: 24px; right: 24px; border-left: none; border-bottom: none; }
+.pro-bracket.bl { bottom: 24px; left: 24px; border-right: none; border-top: none; }
+.pro-bracket.br { bottom: 24px; right: 24px; border-left: none; border-top: none; }
+
+/* Top status text */
+.pro-status {
+  position: absolute;
+  top: 32px; left: 50%; transform: translateX(-50%);
+  font-family: 'Cairo', monospace;
+  font-size: 0.7rem; font-weight: 600;
+  letter-spacing: 3px;
+  color: rgba(96,165,250,0.7);
+  text-transform: uppercase;
+  z-index: 6;
+  opacity: 0;
+  animation: proStatusBlink 0.6s ease 1.8s forwards, proStatusPulse 1.2s ease 2.4s infinite;
+}
+.pro-status::before {
+  content: '●';
+  color: #16a34a;
+  margin-left: 8px;
+  text-shadow: 0 0 8px #16a34a;
+}
+
+/* Bottom progress */
+.pro-progress {
+  position: absolute;
+  bottom: 60px; left: 50%; transform: translateX(-50%);
+  width: 200px;
+  z-index: 6;
+}
+.pro-progress-track {
+  width: 100%; height: 1px;
+  background: rgba(96,165,250,0.15);
+  position: relative; overflow: hidden;
+}
+.pro-progress-fill {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 0%;
+  background: linear-gradient(90deg, #60a5fa, #fbbf24);
+  box-shadow: 0 0 8px rgba(96,165,250,0.6);
+  animation: proProgressFill 2.2s cubic-bezier(0.65, 0, 0.35, 1) 0.2s forwards;
+}
+.pro-progress-text {
+  display: flex; justify-content: space-between;
+  margin-top: 8px;
+  font-family: 'Cairo', monospace;
+  font-size: 0.65rem; font-weight: 600;
+  color: rgba(148,163,184,0.6);
+  letter-spacing: 2px;
+}
+
+/* ═══ KEYFRAMES ═══ */
+@keyframes proGridMove {
+  0%   { background-position: 0 0; }
+  100% { background-position: 0 80px; }
+}
+@keyframes proHorizonExpand {
+  0%   { transform: scaleX(0); opacity: 0; }
+  100% { transform: scaleX(1); opacity: 1; }
+}
+@keyframes proGlowFadeIn {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+@keyframes proBeamSweep {
+  0%, 100% { opacity: 0; transform: translateY(0); }
+  50%      { opacity: 1; }
+}
+@keyframes proLogoReveal {
+  0%   { transform: translateY(110%); }
+  100% { transform: translateY(0); }
+}
+@keyframes proUnderlineExpand {
+  0%   { width: 0; }
+  100% { width: 280px; }
+}
+@keyframes proTaglineReveal {
+  0%   { transform: translateY(110%); }
+  100% { transform: translateY(0); }
+}
+@keyframes proBracketIn {
+  0%   { opacity: 0; transform: scale(0.6); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes proStatusBlink {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+@keyframes proStatusPulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.5; }
+}
+@keyframes proProgressFill {
+  0%   { width: 0%; }
+  100% { width: 100%; }
+}
+@keyframes proIntroExit {
+  0%   { opacity: 1; transform: scale(1); filter: blur(0); }
+  100% { opacity: 0; transform: scale(1.1); filter: blur(8px); visibility: hidden; pointer-events: none; }
+}
+
+/* ═══ PERSISTENT BACKGROUND (subtle, after intro) ═══ */
+.pro-bg-global {
+  position: fixed; inset: 0; z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+  perspective: 1200px;
+  perspective-origin: 50% 60%;
+  background: linear-gradient(180deg, #0a1024 0%, #050810 100%);
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+.pro-bg-global.active { opacity: 1; }
+
+.pro-bg-grid {
+  position: absolute;
+  left: 50%; top: 65%;
+  width: 300vw; height: 200vh;
+  transform: translate(-50%, 0) rotateX(72deg);
+  background-image:
+    linear-gradient(rgba(96,165,250,0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(96,165,250,0.12) 1px, transparent 1px);
+  background-size: 90px 90px;
+  animation: proBgGridMove 4s linear infinite;
+  mask-image: radial-gradient(ellipse at 50% 0%, black 25%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 0%, black 25%, transparent 70%);
+}
+.pro-bg-grid.ceiling {
+  top: -65%;
+  transform: translate(-50%, 0) rotateX(-72deg);
+  background-image:
+    linear-gradient(rgba(245,158,11,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245,158,11,0.06) 1px, transparent 1px);
+  mask-image: radial-gradient(ellipse at 50% 100%, black 25%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 100%, black 25%, transparent 70%);
+}
+.pro-bg-global::before {
+  content: ''; position: absolute;
+  left: 0; right: 0; top: 50%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(96,165,250,0.4) 50%, transparent);
+  box-shadow: 0 0 15px rgba(96,165,250,0.3);
+}
+.pro-bg-global::after {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, transparent 30%, rgba(5,8,16,0.85) 90%);
+}
+@keyframes proBgGridMove {
+  0%   { background-position: 0 0; }
+  100% { background-position: 0 90px; }
+}
+
+/* Make hero blend with the persistent grid */
+body.pro-bg-active .hero {
+  background: linear-gradient(135deg, rgba(26,35,64,0.88) 0%, rgba(36,48,96,0.82) 60%, rgba(30,58,138,0.78) 100%);
+}
+
+@media (max-width: 600px) {
+  .pro-grid { background-size: 60px 60px; }
+  .pro-bg-grid { background-size: 65px 65px; }
+  .pro-bracket { width: 28px; height: 28px; }
+  .pro-bracket.tl, .pro-bracket.tr { top: 16px; }
+  .pro-bracket.bl, .pro-bracket.br { bottom: 16px; }
+  .pro-bracket.tl, .pro-bracket.bl { left: 16px; }
+  .pro-bracket.tr, .pro-bracket.br { right: 16px; }
+  .pro-status { font-size: 0.6rem; letter-spacing: 2px; top: 20px; }
+  .pro-progress { width: 160px; bottom: 40px; }
+  @keyframes proUnderlineExpand {
+    0%   { width: 0; }
+    100% { width: 200px; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pro-intro { animation-duration: 0.4s; animation-delay: 0.5s; }
+  .pro-grid, .pro-bg-grid, .pro-beam { animation: none !important; }
+  .pro-logo, .pro-tagline { transform: translateY(0); animation: none; }
+  .pro-underline { width: 200px; animation: none; }
+}
+
 /* ── NAV ── */
 nav {
   position: fixed; top:0; left:0; right:0; z-index: 200;
@@ -472,6 +829,60 @@ footer p { color:#94a3b8; font-size:0.83rem; line-height:1.75; }
 </style>
 </head>
 <body>
+
+<!-- PROFESSIONAL 3D INTRO -->
+<div class="pro-intro" id="proIntro">
+  <!-- 3D environment -->
+  <div class="pro-grid"></div>
+  <div class="pro-grid ceiling"></div>
+  <div class="pro-horizon-glow"></div>
+  <div class="pro-horizon"></div>
+
+  <!-- Light beams -->
+  <div class="pro-beam"></div>
+  <div class="pro-beam"></div>
+  <div class="pro-beam"></div>
+  <div class="pro-beam"></div>
+
+  <!-- Corner brackets -->
+  <div class="pro-bracket tl"></div>
+  <div class="pro-bracket tr"></div>
+  <div class="pro-bracket bl"></div>
+  <div class="pro-bracket br"></div>
+
+  <!-- Top status -->
+  <div class="pro-status">SYSTEM ONLINE</div>
+
+  <!-- Logo + tagline -->
+  <div class="pro-content">
+    <div class="pro-logo-wrap">
+      <div class="pro-logo">
+        <span class="bolt">⚡</span><span class="smm">SMM</span><span class="qaidi">Qaidi</span>
+      </div>
+    </div>
+    <div class="pro-underline"></div>
+    <div class="pro-tagline-wrap">
+      <div class="pro-tagline">Premium <span>SMM</span> Services</div>
+    </div>
+  </div>
+
+  <!-- Bottom progress -->
+  <div class="pro-progress">
+    <div class="pro-progress-track">
+      <div class="pro-progress-fill"></div>
+    </div>
+    <div class="pro-progress-text">
+      <span>LOADING</span>
+      <span>v1.0</span>
+    </div>
+  </div>
+</div>
+
+<!-- PERSISTENT 3D CYBER BACKGROUND -->
+<div class="pro-bg-global" id="proBg">
+  <div class="pro-bg-grid"></div>
+  <div class="pro-bg-grid ceiling"></div>
+</div>
 
 <!-- SCROLL PROGRESS BAR -->
 <div class="scroll-progress"><div class="scroll-progress-bar" id="scrollBar"></div></div>
@@ -2147,6 +2558,31 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
   });
 });
+
+// PROFESSIONAL 3D INTRO + PERSISTENT BG
+(function() {
+  const intro = document.getElementById('proIntro');
+  const bg = document.getElementById('proBg');
+  if (!intro || !bg) return;
+
+  document.body.style.overflow = 'hidden';
+
+  function finishIntro() {
+    intro.classList.add('done');
+    bg.classList.add('active');
+    document.body.classList.add('pro-bg-active');
+    document.body.style.overflow = '';
+  }
+
+  // Skip on click
+  intro.addEventListener('click', () => {
+    intro.style.animation = 'proIntroExit 0.4s ease forwards';
+    setTimeout(finishIntro, 420);
+  });
+
+  // Auto-dismiss after intro completes (2.4s + 0.7s exit = 3.1s)
+  setTimeout(finishIntro, 3100);
+})();
 </script>
 </body>
 </html>
