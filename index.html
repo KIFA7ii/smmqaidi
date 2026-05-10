@@ -83,6 +83,105 @@ img { max-width: 100%; height: auto; }
 button, a, input, [role="button"] { touch-action: manipulation; }
 .container { width:100%; max-width:1100px; margin:0 auto; padding:0 1.25rem; }
 
+/* ═══════════════════════════════════════════
+   SMOOTH LOGIN INTRO  (~0.8s, non-blocking)
+   Fades in/out a centered logo briefly without
+   delaying the hero — content loads underneath.
+   ═══════════════════════════════════════════ */
+.smooth-intro {
+  position: fixed; inset: 0; z-index: 9999;
+  background:
+    radial-gradient(ellipse at center, #1a2340 0%, #0a0f1f 70%, #050810 100%);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 0.9rem;
+  /* Force LTR so the logo reads correctly inside RTL body */
+  direction: ltr;
+  pointer-events: none;
+  /* Total: 0.05s settle + 0.55s display + 0.4s fade-out = 1s */
+  animation: smoothIntroExit 0.4s ease-out 0.6s forwards;
+}
+.smooth-intro.done { display: none; }
+
+/* Subtle radial glow pulse (cheap, GPU-only) */
+.smooth-intro::before {
+  content: ""; position: absolute;
+  left: 50%; top: 50%;
+  width: 320px; height: 320px;
+  margin: -160px 0 0 -160px;
+  background: radial-gradient(circle, rgba(96,165,250,0.22), transparent 65%);
+  filter: blur(8px);
+  opacity: 0;
+  animation: smoothGlow 0.7s ease-out forwards;
+}
+
+.smooth-logo {
+  font-family: 'Tajawal', 'Cairo', sans-serif;
+  font-size: clamp(2.4rem, 8vw, 4rem);
+  font-weight: 900;
+  letter-spacing: -1.5px;
+  display: flex; align-items: center; gap: 0.05em;
+  opacity: 0;
+  transform: scale(0.92);
+  animation: smoothLogoIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.05s forwards;
+}
+.smooth-logo .bolt   { color: #fbbf24; filter: drop-shadow(0 0 12px rgba(251,191,36,0.55)); }
+.smooth-logo .smm    { color: #fff; }
+.smooth-logo .qaidi  {
+  background: linear-gradient(135deg, #60a5fa, #818cf8);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.smooth-tagline {
+  color: #94a3b8;
+  font-size: clamp(0.7rem, 2vw, 0.85rem);
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  font-family: 'Cairo', sans-serif;
+  font-weight: 700;
+  opacity: 0;
+  transform: translateY(6px);
+  animation: smoothTaglineIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.25s forwards;
+}
+.smooth-tagline span { color: #fbbf24; }
+
+/* Loading bar at the bottom — visual feedback (~0.7s) */
+.smooth-bar {
+  position: absolute; bottom: 18%; left: 50%;
+  width: 140px; height: 2px; margin-left: -70px;
+  background: rgba(96, 165, 250, 0.15);
+  border-radius: 2px; overflow: hidden;
+}
+.smooth-bar::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, #60a5fa, transparent);
+  transform: translateX(-100%);
+  animation: smoothBarSweep 0.8s ease-in-out infinite;
+}
+
+@keyframes smoothLogoIn {
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes smoothTaglineIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes smoothGlow {
+  to { opacity: 1; }
+}
+@keyframes smoothBarSweep {
+  to { transform: translateX(100%); }
+}
+@keyframes smoothIntroExit {
+  to { opacity: 0; visibility: hidden; }
+}
+
+/* Reduce-motion: just a tiny fade, almost no animation */
+@media (prefers-reduced-motion: reduce) {
+  .smooth-intro { animation: smoothIntroExit 0.2s ease 0.2s forwards; }
+  .smooth-logo, .smooth-tagline { opacity: 1 !important; transform: none !important; animation: none !important; }
+  .smooth-bar, .smooth-intro::before { display: none; }
+}
+
 /* ── NAV ── */
 nav {
   position: fixed; top:0; left:0; right:0; z-index: 200;
@@ -630,6 +729,15 @@ body.low-power *::after {
 </style>
 </head>
 <body>
+
+<!-- SMOOTH LOGIN INTRO -->
+<div class="smooth-intro" id="smoothIntro" aria-hidden="true">
+  <div class="smooth-logo">
+    <span class="bolt">⚡</span><span class="smm">SMM</span><span class="qaidi">Qaidi</span>
+  </div>
+  <div class="smooth-tagline">Premium <span>SMM</span> Services</div>
+  <div class="smooth-bar"></div>
+</div>
 
 <!-- SCROLL PROGRESS BAR -->
 <div class="scroll-progress"><div class="scroll-progress-bar" id="scrollBar"></div></div>
@@ -2393,6 +2501,16 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     ticker.style.animationPlayState = entry.isIntersecting ? 'running' : 'paused';
   });
   obs.observe(ticker.parentElement || ticker);
+})();
+
+// ── SMOOTH LOGIN INTRO CLEANUP ──
+// CSS handles the entire animation. JS just removes the element from
+// the DOM after the exit animation finishes, so it doesn't waste paint.
+(function() {
+  const intro = document.getElementById('smoothIntro');
+  if (!intro) return;
+  // Total CSS duration: 0.6s delay + 0.4s exit = 1.0s. Add small buffer.
+  setTimeout(() => intro.classList.add('done'), 1100);
 })();
 
 // ═══════════════════════════════════════════════════════
